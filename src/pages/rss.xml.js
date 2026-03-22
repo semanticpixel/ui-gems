@@ -15,7 +15,7 @@ export async function GET(context) {
       title: post.data.title,
       pubDate: post.data.date,
       description: post.data.description,
-      link: `/ui-gems/posts/${post.slug}/`,
+      link: `/posts/${post.slug}/`,
     })),
     customData: `<language>en-us</language>`,
   });

@@ -21,7 +21,7 @@ const formattedDate = new Intl.DateTimeFormat("en-US", {
 const readingTime = wordCount ? Math.max(1, Math.ceil(wordCount / 200)) : null;
 ---
 
-<a href={`/ui-gems/posts/${slug}/`} class="post-card">
+<a href={`/posts/${slug}/`} class="post-card">
   <div class="card-inner">
     {series && (
       <span class="card-series">

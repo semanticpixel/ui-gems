@@ -36,7 +36,7 @@ import "@/styles/ui-gems.css";
       rel="alternate"
       type="application/rss+xml"
       title="UI Gems RSS Feed"
-      href="/ui-gems/rss.xml"
+      href="/rss.xml"
     />
 
     <title>{title} — UI Gems</title>
@@ -50,19 +50,19 @@ import "@/styles/ui-gems.css";
       <!-- Navigation -->
       <nav class="nav">
         <div class="nav-inner">
-          <a href="/ui-gems/" class="nav-logo">
+          <a href="/" class="nav-logo">
             <span class="nav-logo-gem">💎</span>
             <span class="nav-logo-text">UI Gems</span>
           </a>
           <div class="nav-links">
             <a
-              href="/ui-gems/"
-              class:list={["nav-link", { active: currentPath === "/ui-gems/" || currentPath === "/ui-gems" }]}
+              href="/"
+              class:list={["nav-link", { active: currentPath === "/" || currentPath === "" }]}
             >
               Articles
             </a>
             <a
-              href="/ui-gems/about/"
+              href="/about/"
               class:list={["nav-link", { active: currentPath.includes("/about") }]}
             >
               About
@@ -98,7 +98,7 @@ import "@/styles/ui-gems.css";
             <span class="footer-sep">·</span>
             <a href="https://linkedin.com/in/theluistorres">LinkedIn</a>
             <span class="footer-sep">·</span>
-            <a href="/ui-gems/rss.xml">RSS</a>
+            <a href="/rss.xml">RSS</a>
           </div>
         </div>
       </footer>
