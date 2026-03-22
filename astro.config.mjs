@@ -13,8 +13,7 @@ const uiGemsNight = JSON.parse(
 );
 
 export default defineConfig({
-  site: "https://semanticpixel.github.io",
-  base: "/ui-gems",
+  site: "https://ui-gems.com",
   integrations: [react(), mdx(), sitemap()],
   markdown: {
     shikiConfig: {
