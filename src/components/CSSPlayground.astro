@@ -1,0 +1,352 @@
+---
+interface Props {
+  title?: string;
+  description?: string;
+  css: string;
+  html: string;
+  editable?: boolean;
+  resizable?: boolean;
+  previewMinHeight?: string;
+}
+
+const {
+  title,
+  description,
+  css,
+  html,
+  editable = true,
+  resizable = true,
+  previewMinHeight = "180px",
+} = Astro.props;
+
+// Generate a unique ID for this playground instance
+const id = `playground-${Math.random().toString(36).slice(2, 9)}`;
+---
+
+<div class="playground-wrapper">
+  <div class="playground" id={id}>
+    {title && (
+      <div class="playground-header">
+        <div class="playground-dot playground-dot--red"></div>
+        <div class="playground-dot playground-dot--yellow"></div>
+        <div class="playground-dot playground-dot--green"></div>
+        <span class="playground-title">{title}</span>
+      </div>
+    )}
+    {description && <p class="playground-description">{description}</p>}
+
+    <div class="playground-panels">
+      <!-- Editor Panel -->
+      <div class="playground-editor-panel">
+        <div class="panel-label">
+          <span class="panel-label-icon">✎</span> CSS
+          {editable && <span class="panel-label-hint">editable</span>}
+        </div>
+        <div
+          class="playground-editor"
+          contenteditable={editable ? "true" : "false"}
+          spellcheck="false"
+          data-playground-editor
+        >
+          <pre><code set:text={css.trim()} /></pre>
+        </div>
+        {editable && (
+          <button class="playground-reset" data-playground-reset title="Reset CSS">
+            ↺ Reset
+          </button>
+        )}
+      </div>
+
+      <!-- Preview Panel -->
+      <div class="playground-preview-panel">
+        <div class="panel-label">
+          <span class="panel-label-icon">👁</span> Preview
+        </div>
+        <div
+          class:list={[
+            "playground-preview",
+            { "playground-preview--resizable": resizable },
+          ]}
+          style={`min-height: ${previewMinHeight}`}
+          data-playground-preview
+        >
+          <iframe
+            data-playground-iframe
+            sandbox="allow-scripts allow-same-origin"
+            title={title || "CSS Preview"}
+            style="width: 100%; height: 100%; border: none; background: white;"
+          ></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script define:vars={{ id, css: css.trim(), html: html.trim() }}>
+  // Self-executing setup for this playground instance
+  (function () {
+    const root = document.getElementById(id);
+    if (!root) return;
+
+    const editor = root.querySelector("[data-playground-editor]");
+    const iframe = root.querySelector("[data-playground-iframe]");
+    const resetBtn = root.querySelector("[data-playground-reset]");
+    const originalCSS = css;
+
+    function getEditorText() {
+      const code = editor.querySelector("code");
+      if (code) return code.textContent || "";
+      return editor.textContent || "";
+    }
+
+    function updatePreview() {
+      const currentCSS = getEditorText();
+      const doc = iframe.contentDocument || iframe.contentWindow.document;
+      doc.open();
+      doc.write(`<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      padding: 1.25rem;
+      background: #ffffff;
+      color: #1a1a2e;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+  </style>
+  <style id="user-css">${currentCSS}</style>
+</head>
+<body>${html}</body>
+</html>`);
+      doc.close();
+    }
+
+    // Initial render
+    updatePreview();
+
+    // Live editing
+    if (editor.contentEditable === "true") {
+      let debounceTimer;
+      editor.addEventListener("input", () => {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(updatePreview, 250);
+      });
+
+      // Handle Tab key for indentation
+      editor.addEventListener("keydown", (e) => {
+        if (e.key === "Tab") {
+          e.preventDefault();
+          const selection = window.getSelection();
+          const range = selection.getRangeAt(0);
+          const tabNode = document.createTextNode("  ");
+          range.insertNode(tabNode);
+          range.setStartAfter(tabNode);
+          range.setEndAfter(tabNode);
+          selection.removeAllRanges();
+          selection.addRange(range);
+        }
+      });
+    }
+
+    // Reset button
+    if (resetBtn) {
+      resetBtn.addEventListener("click", () => {
+        const code = editor.querySelector("code");
+        if (code) {
+          code.textContent = originalCSS;
+        } else {
+          editor.textContent = originalCSS;
+        }
+        updatePreview();
+      });
+    }
+  })();
+</script>
+
+<style>
+  .playground-wrapper {
+    margin-block: var(--space-xl);
+  }
+
+  .playground {
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    background: var(--c-bg-raised);
+  }
+
+  .playground-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 14px;
+    background: var(--c-surface);
+    border-bottom: 1px solid var(--c-border-subtle);
+  }
+
+  .playground-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+  }
+
+  .playground-dot--red { background: #ff5f57; }
+  .playground-dot--yellow { background: #febc2e; }
+  .playground-dot--green { background: #28c840; }
+
+  .playground-title {
+    font-family: var(--f-mono);
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--c-text-muted);
+    margin-left: 8px;
+  }
+
+  .playground-description {
+    font-size: 0.8125rem;
+    color: var(--c-text-muted);
+    padding: var(--space-sm) var(--space-md);
+    border-bottom: 1px solid var(--c-border-subtle);
+    margin: 0;
+  }
+
+  .playground-panels {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  @media (min-width: 640px) {
+    .playground-panels {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .playground-editor-panel {
+    position: relative;
+    border-bottom: 1px solid var(--c-border-subtle);
+  }
+
+  @media (min-width: 640px) {
+    .playground-editor-panel {
+      border-bottom: none;
+      border-right: 1px solid var(--c-border-subtle);
+    }
+  }
+
+  .panel-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    font-family: var(--f-mono);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    color: var(--c-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    border-bottom: 1px solid var(--c-border-subtle);
+    background: var(--c-surface);
+  }
+
+  .panel-label-icon {
+    font-size: 0.75rem;
+  }
+
+  .panel-label-hint {
+    margin-left: auto;
+    font-size: 0.6rem;
+    color: var(--c-accent-dim);
+    text-transform: lowercase;
+    letter-spacing: 0;
+    background: var(--c-accent-glow);
+    padding: 1px 6px;
+    border-radius: 999px;
+  }
+
+  .playground-editor {
+    padding: var(--space-md);
+    font-family: var(--f-mono);
+    font-size: 0.8125rem;
+    line-height: 1.65;
+    color: var(--c-text);
+    min-height: 120px;
+    max-height: 400px;
+    overflow-y: auto;
+    outline: none;
+    white-space: pre;
+    tab-size: 2;
+  }
+
+  .playground-editor pre {
+    margin: 0;
+    padding: 0;
+    background: none !important;
+    border: none;
+    font-size: inherit;
+    line-height: inherit;
+  }
+
+  .playground-editor code {
+    background: none;
+    padding: 0;
+    color: inherit;
+    font-size: inherit;
+  }
+
+  .playground-editor:focus {
+    background: rgba(129, 140, 248, 0.03);
+  }
+
+  .playground-editor[contenteditable="true"] {
+    cursor: text;
+  }
+
+  .playground-reset {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    font-family: var(--f-mono);
+    font-size: 0.6875rem;
+    color: var(--c-text-muted);
+    background: var(--c-surface);
+    border: 1px solid var(--c-border-subtle);
+    border-radius: var(--radius-sm);
+    padding: 3px 8px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .playground-reset:hover {
+    color: var(--c-accent);
+    border-color: var(--c-accent-dim);
+  }
+
+  .playground-preview-panel {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .playground-preview {
+    flex: 1;
+    position: relative;
+    background: #ffffff;
+    overflow: hidden;
+  }
+
+  .playground-preview--resizable {
+    resize: horizontal;
+    min-width: 200px;
+  }
+
+  .playground-preview iframe {
+    display: block;
+  }
+</style>

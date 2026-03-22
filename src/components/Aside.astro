@@ -1,0 +1,194 @@
+---
+/**
+ * Aside — Contextual callout/sidenote component.
+ *
+ * Usage in MDX:
+ *   <Aside variant="info" title="Good to know">
+ *     Some helpful information. Code blocks inside here
+ *     will automatically adapt their colors to match.
+ *   </Aside>
+ *
+ * Variants: info (default), success, warning, error
+ *
+ * Code blocks (`pre > code`) nested inside an Aside automatically
+ * receive contextual background colors, border tints, and adjusted
+ * copy-button styling — no extra props needed.
+ */
+
+interface Props {
+  variant?: "info" | "success" | "warning" | "error";
+  title?: string;
+}
+
+const { variant = "info", title } = Astro.props;
+
+const icons: Record<string, string> = {
+  info: "💡",
+  success: "✅",
+  warning: "⚠️",
+  error: "🚨",
+};
+---
+
+<div class:list={["aside", `aside--${variant}`]} role="note">
+  <div class="aside-header">
+    <span class="aside-icon">{icons[variant]}</span>
+    {title && <span class="aside-title">{title}</span>}
+  </div>
+  <div class="aside-content">
+    <slot />
+  </div>
+</div>
+
+<style>
+  /* ------------------------------------------------
+     Base aside styles
+     ------------------------------------------------ */
+  .aside {
+    --aside-bg: var(--c-surface);
+    --aside-border: var(--c-accent-dim);
+    --aside-tint: var(--c-accent);
+    --aside-tint-glow: var(--c-accent-glow);
+    --aside-code-bg: rgba(99, 102, 241, 0.08);
+    --aside-code-border: rgba(99, 102, 241, 0.18);
+
+    position: relative;
+    font-family: var(--f-ui);
+    margin-block: var(--space-xl);
+    margin-inline: calc(-1 * var(--viewport-padding));
+    padding: var(--space-lg);
+    background: var(--aside-bg);
+    /* border: 1px solid var(--aside-border); */
+    border-inline-start: 4px solid var(--aside-border);
+    /* border-radius: var(--radius-md); */
+  }
+
+  /* ------------------------------------------------
+     Variant color palettes
+     ------------------------------------------------ */
+  .aside--info {
+    --aside-bg: rgba(99, 102, 241, 0.06);
+    --aside-border: rgba(99, 102, 241, 0.35);
+    --aside-tint: #818cf8;
+    --aside-tint-glow: rgba(99, 102, 241, 0.12);
+    --aside-code-bg: rgba(99, 102, 241, 0.08);
+    --aside-code-border: rgba(99, 102, 241, 0.18);
+  }
+
+  .aside--success {
+    --aside-bg: rgba(52, 211, 153, 0.06);
+    --aside-border: rgba(52, 211, 153, 0.35);
+    --aside-tint: #34d399;
+    --aside-tint-glow: rgba(52, 211, 153, 0.12);
+    --aside-code-bg: rgba(52, 211, 153, 0.08);
+    --aside-code-border: rgba(52, 211, 153, 0.18);
+  }
+
+  .aside--warning {
+    --aside-bg: rgba(251, 191, 36, 0.06);
+    --aside-border: rgba(251, 191, 36, 0.30);
+    --aside-tint: #fbbf24;
+    --aside-tint-glow: rgba(251, 191, 36, 0.12);
+    --aside-code-bg: rgba(251, 191, 36, 0.08);
+    --aside-code-border: rgba(251, 191, 36, 0.18);
+  }
+
+  .aside--error {
+    --aside-bg: rgba(248, 113, 113, 0.06);
+    --aside-border: rgba(248, 113, 113, 0.35);
+    --aside-tint: #f87171;
+    --aside-tint-glow: rgba(248, 113, 113, 0.12);
+    --aside-code-bg: rgba(248, 113, 113, 0.08);
+    --aside-code-border: rgba(248, 113, 113, 0.18);
+  }
+
+  /* ------------------------------------------------
+     Header
+     ------------------------------------------------ */
+  .aside-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-sm);
+  }
+
+  .aside-icon {
+    font-size: 1rem;
+    line-height: 1;
+  }
+
+  .aside-title {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--aside-tint);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  /* ------------------------------------------------
+     Content — paragraph and inline code overrides
+     ------------------------------------------------ */
+  .aside-content {
+    font-size: 0.9rem;
+    line-height: 1.7;
+  }
+
+  .aside-content :global(p) {
+    color: var(--c-text-muted);
+    margin-bottom: var(--space-sm);
+  }
+
+  .aside-content :global(p:last-child) {
+    margin-bottom: 0;
+  }
+
+  /* Inline code inside asides picks up the variant tint */
+  .aside-content :global(code) {
+    background: var(--aside-tint-glow);
+    color: var(--aside-tint);
+    border: 1px solid var(--aside-code-border);
+  }
+
+  /* ------------------------------------------------
+     Contextual code block styling (the Josh Comeau trick)
+     Code blocks (`pre`) inside an aside get variant-aware
+     colors, borders, and spacing adjustments.
+     ------------------------------------------------ */
+  .aside-content :global(pre) {
+    background: var(--aside-code-bg) !important;
+    border-color: var(--aside-code-border);
+    margin: var(--space-md) 0;
+    padding: var(--space-md);
+    font-size: 0.8125rem;
+  }
+
+  /* Tighter spacing when code block is the last child */
+  .aside-content :global(pre:last-child) {
+    margin-bottom: 0;
+  }
+
+  /* Tighter spacing when code block is the first child after header */
+  .aside-content :global(pre:first-child) {
+    margin-top: 0;
+  }
+
+  /* ------------------------------------------------
+     Playground wrappers inside asides get tighter margins
+     ------------------------------------------------ */
+  .aside-content :global(.playground-wrapper) {
+    margin: var(--space-md) 0;
+  }
+
+  /* ------------------------------------------------
+     Links inside asides use variant tint
+     ------------------------------------------------ */
+  .aside-content :global(a) {
+    color: var(--aside-tint);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .aside-content :global(a:hover) {
+    color: var(--c-text);
+  }
+</style>

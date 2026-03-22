@@ -1,0 +1,38 @@
+---
+import Base from "@/layouts/Base.astro";
+---
+
+<Base title="About" description="About UI Gems and its author">
+  <div class="prose about">
+    <h1>About UI Gems</h1>
+    <p>
+      UI Gems is a weekly technical writing series exploring advanced CSS
+      techniques, experimental specifications, and the future of the web
+      platform. Every article originates here and is cross-posted to Medium
+      and LinkedIn. The interactive demos are exclusive to this site.
+    </p>
+
+    <h2>About the Author</h2>
+    <p>
+      Senior Frontend Engineer with deep expertise in CSS architecture, design
+      systems, and modern web standards. Previously Staff Engineer at LinkedIn,
+      where I built token-based design systems, a layout engine inspired by
+      Flexbox and Compose, and Figma-to-code tooling that improved delivery
+      speed by 40%.
+    </p>
+
+    <h2>Follow Along</h2>
+    <p>
+      Find me on <a href="https://medium.com/@projectluis">Medium</a>,
+      <a href="https://linkedin.com/in/theluistorres">LinkedIn</a>, and
+      <a href="https://github.com/semanticpixel">GitHub</a>. Or subscribe
+      via <a href="/ui-gems/rss.xml">RSS</a>.
+    </p>
+  </div>
+</Base>
+
+<style>
+  .about {
+    max-width: var(--content-width);
+  }
+</style>

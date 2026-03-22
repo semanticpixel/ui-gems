@@ -1,0 +1,139 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  date: Date;
+  slug: string;
+  series?: string;
+  issue?: number;
+  tags?: string[];
+  wordCount?: number;
+}
+
+const { title, description, date, slug, series, issue, tags, wordCount } = Astro.props;
+
+const formattedDate = new Intl.DateTimeFormat("en-US", {
+  year: "numeric",
+  month: "short",
+  day: "numeric",
+}).format(date);
+
+const readingTime = wordCount ? Math.max(1, Math.ceil(wordCount / 200)) : null;
+---
+
+<a href={`/ui-gems/posts/${slug}/`} class="post-card">
+  <div class="card-inner">
+    {series && (
+      <span class="card-series">
+        {series}{issue ? ` #${issue}` : ""}
+      </span>
+    )}
+    <h2 class="card-title">{title}</h2>
+    <p class="card-description">{description}</p>
+    <div class="card-footer">
+      <time datetime={date.toISOString()}>{formattedDate}</time>
+      {readingTime && (
+        <>
+          <span class="footer-sep">·</span>
+          <span>{readingTime} min read</span>
+        </>
+      )}
+    </div>
+    {tags && tags.length > 0 && (
+      <div class="card-tags">
+        {tags.slice(0, 4).map((tag) => (
+          <span class="card-tag">#{tag}</span>
+        ))}
+      </div>
+    )}
+  </div>
+  <div class="card-arrow" aria-hidden="true">→</div>
+</a>
+
+<style>
+  .post-card {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-lg);
+    padding: var(--space-xl);
+    border: 1px solid var(--c-border-subtle);
+    border-radius: var(--radius-lg);
+    text-decoration: none;
+    transition: all var(--duration-normal) var(--ease-out);
+    background: transparent;
+  }
+
+  .post-card:hover {
+    border-color: var(--c-border);
+    background: var(--c-bg-raised);
+  }
+  
+  .card-series {
+    font-family: var(--f-mono);
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--c-accent);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .card-title {
+    font-family: var(--f-display);
+    font-size: 1.35rem;
+    font-weight: 400;
+    font-style: italic;
+    color: var(--c-text);
+    line-height: 1.25;
+    margin: var(--space-xs) 0 var(--space-sm);
+  }
+
+  .card-description {
+    font-size: 0.9rem;
+    color: var(--c-text-secondary);
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .card-footer {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    margin-top: var(--space-md);
+    font-size: 0.75rem;
+    color: var(--c-text-muted);
+  }
+
+  .footer-sep { opacity: 0.4; }
+
+  .card-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+    margin-top: var(--space-sm);
+  }
+
+  .card-tag {
+    font-family: var(--f-mono);
+    font-size: 0.65rem;
+    color: var(--c-text-muted);
+    background: var(--c-surface);
+    padding: 0.15em 0.5em;
+    border-radius: var(--radius-sm);
+  }
+
+  .card-arrow {
+    font-size: 1.25rem;
+    color: var(--c-text-muted);
+    transition:
+      color var(--duration-normal) var(--ease-out),
+      translate var(--duration-slow) var(--ease-in-out);
+    flex-shrink: 0;
+    margin-top: var(--space-sm);
+
+    .post-card:hover & {
+      color: var(--c-accent);
+      translate: 4px;
+    }
+  }
+</style>

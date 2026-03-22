@@ -1,0 +1,229 @@
+---
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description = "Advanced CSS techniques and experimental specifications" } = Astro.props;
+const currentPath = Astro.url.pathname;
+
+import "@/styles/ui-gems.css";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <meta name="generator" content={Astro.generator} />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    /> -->
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;1,8..60,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- RSS -->
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title="UI Gems RSS Feed"
+      href="/ui-gems/rss.xml"
+    />
+
+    <title>{title} — UI Gems</title>
+
+    <style>
+      @view-transition { navigation: auto; }
+    </style>
+  </head>
+  <body>
+    <div class="site-wrapper">
+      <!-- Navigation -->
+      <nav class="nav">
+        <div class="nav-inner">
+          <a href="/ui-gems/" class="nav-logo">
+            <span class="nav-logo-gem">💎</span>
+            <span class="nav-logo-text">UI Gems</span>
+          </a>
+          <div class="nav-links">
+            <a
+              href="/ui-gems/"
+              class:list={["nav-link", { active: currentPath === "/ui-gems/" || currentPath === "/ui-gems" }]}
+            >
+              Articles
+            </a>
+            <a
+              href="/ui-gems/about/"
+              class:list={["nav-link", { active: currentPath.includes("/about") }]}
+            >
+              About
+            </a>
+            <a
+              href="https://github.com/semanticpixel/ui-gems"
+              class="nav-link nav-link--icon"
+              target="_blank"
+              rel="noopener"
+              aria-label="GitHub"
+            >
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+      </nav>
+
+      <!-- Main Content -->
+      <main class="main">
+        <slot />
+      </main>
+
+      <!-- Footer -->
+      <footer class="footer">
+        <div class="footer-inner">
+          <p class="footer-text">
+            UI Gems — A weekly series exploring advanced CSS techniques.
+          </p>
+          <div class="footer-links">
+            <a href="https://medium.com/@projectluis">Medium</a>
+            <span class="footer-sep">·</span>
+            <a href="https://linkedin.com/in/theluistorres">LinkedIn</a>
+            <span class="footer-sep">·</span>
+            <a href="/ui-gems/rss.xml">RSS</a>
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <style>
+      .site-wrapper {
+        min-height: 100dvh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* Nav */
+      .nav {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: rgba(10, 10, 15, 0.85);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-block-end: 1px solid var(--c-border-subtle);
+      }
+      .nav-inner {
+        max-width: var(--site-width);
+        margin: 0 auto;
+        padding: 0 var(--space-lg);
+        height: var(--header-height);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .nav-logo {
+        display: flex;
+        align-items: center;
+        gap: var(--space-sm);
+        text-decoration: none;
+        color: var(--c-text);
+      }
+      .nav-logo-gem { font-size: 1.25rem; }
+      .nav-logo-text {
+        font-family: var(--f-display);
+        font-size: 1.35rem;
+        font-style: italic;
+        letter-spacing: -0.02em;
+      }
+      .nav-links {
+        font-family: var(--f-ui);
+        display: flex;
+        align-items: center;
+        gap: var(--space-lg);
+      }
+      .nav-link {
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: var(--c-text-muted);
+        text-decoration: none;
+        transition: color var(--duration-fast) var(--ease-out);
+      }
+      .nav-link:hover,
+      .nav-link.active {
+        color: var(--c-text);
+      }
+      .nav-link--icon {
+        display: flex;
+        align-items: center;
+      }
+
+      /* Main */
+      .main {
+        flex: 1;
+        /* max-width: var(--site-width);
+        width: 100%;
+        margin: 0 auto;
+        padding-inline: var(--viewport-padding); */
+        padding-block: var(--space-3xl);
+
+        display: grid;
+        grid-template-columns: 1fr min(var(--site-width), calc(100% - var(--viewport-padding) * 2)) 1fr;
+        grid-column-gap: var(--viewport-padding);
+
+        > * {
+          grid-column: 2;
+        }
+      }
+
+      /* Footer */
+      .footer {
+        font-family: var(--f-ui);
+        border-block-start: 1px solid var(--c-border-subtle);
+        padding: var(--space-xl) var(--space-lg);
+      }
+      .footer-inner {
+        max-width: var(--site-width);
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: var(--space-md);
+      }
+      .footer-text {
+        font-size: 0.8rem;
+        color: var(--c-text-muted);
+      }
+      .footer-links {
+        display: flex;
+        gap: var(--space-sm);
+        font-size: 0.8rem;
+      }
+      .footer-links a {
+        color: var(--c-text-muted);
+        text-decoration: none;
+        transition: color var(--duration-fast);
+      }
+      .footer-links a:hover { color: var(--c-accent); }
+      .footer-sep { color: var(--c-border); }
+
+      @media (max-width: 640px) {
+        .nav-inner { padding: 0 var(--space-md); }
+        .main { padding-block: var(--space-xl); --viewport-padding: var(--space-md); }
+        .footer-inner {
+          flex-direction: column;
+          text-align: center;
+        }
+      }
+    </style>
+  </body>
+</html>

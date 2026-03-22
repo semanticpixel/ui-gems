@@ -1,0 +1,69 @@
+---
+interface Props {
+  headings: { depth: number; slug: string; text: string }[];
+}
+const { headings } = Astro.props;
+---
+
+{headings.length > 0 && (
+  <nav class="toc" aria-label="Table of Contents">
+    <p class="toc-title">On this page</p>
+    <ul class="toc-list">
+      {headings.map((h) => (
+        <li class:list={["toc-item", { "toc-item--nested": h.depth === 3 }]}>
+          <a href={`#${h.slug}`} class="toc-link">{h.text}</a>
+        </li>
+      ))}
+    </ul>
+  </nav>
+)}
+
+<style>
+  .toc {
+    font-family: var(--f-ui);
+  }
+
+  .toc-title {
+    font-family: var(--f-mono);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--c-text-muted);
+    margin-bottom: var(--space-md);
+  }
+
+  .toc-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    scroll-target-group: auto;
+  }
+
+  .toc-item { display: flex; }
+
+  .toc-link {
+    --_faux-border-color: var(--c-border-subtle);
+    font-size: 0.75rem;
+    color: var(--c-text-muted);
+    text-decoration: none;
+    line-height: 1.5;
+    padding-block: var(--space-sm);
+    padding-inline-start: var(--space-md);
+    box-shadow: inset 2px 0 0 var(--_faux-border-color);
+    transition: color var(--duration-fast) var(--ease-out);
+
+    &:hover {
+      color: var(--c-accent);
+    }
+
+    &:target-current {
+      color: var(--c-accent);
+      --_faux-border-color: var(--c-accent);
+    }
+
+    .toc-item--nested & {
+      padding-inline-start: calc(2 * var(--space-md));
+    }
+  }
+</style>

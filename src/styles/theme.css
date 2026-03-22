@@ -1,0 +1,231 @@
+/* ============================================================
+   UI GEMS — NEWSPAPER DESIGN TOKEN SYSTEM
+   
+   Architecture:
+   1. Base tokens are flat values — warm palette by default
+   2. [data-palette="cool"] overrides base tokens to cool values
+   3. Semantic tokens use light-dark() referencing base tokens
+      — written ONCE, work across all palettes and schemes
+   
+   Usage:
+   <html>                         → warm palette (default)
+   <html data-color-palette="cool">     → cool palette
+   
+   Recommended scheme toggle logic:
+   function toggleTheme() {
+     const isDark = document.documentElement.classList.toggle('dark');
+     document.documentElement.dataset.colorPalette = isDark ? 'cool' : 'warm';
+   }
+   ============================================================ */
+
+:root {
+  /* ---- Typography ----
+     Display: Instrument Serif — elegant, italic, editorial
+     Body:    Inter — clean, readable, professional
+     UI:      Inter — clean, readable, professional
+     Mono:    JetBrains Mono — excellent ligatures, wide
+  */
+  --f-display: "Instrument Serif", Georgia, "Times New Roman", serif;
+  --f-body:    "Source Serif 4", "Source Serif Pro", Georgia, serif;
+  /* --f-body:    "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; */
+  --f-ui:      "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --f-mono:    "JetBrains Mono", "Fira Code", "SF Mono", Menlo, monospace;
+
+  /* ---- Spacing ---- */
+  --space-xs:  0.25rem;
+  --space-sm:  0.5rem;
+  --space-md:  1rem;
+  --space-lg:  1.5rem;
+  --space-xl:  2rem;
+  --space-2xl: 3rem;
+  --space-3xl: 4rem;
+
+  /* ---- Layout ---- */
+  --header-height: 60px;
+  --content-width: 720px;
+  /* --wide-width:    960px; */
+  /* --site-width:    1200px; */
+  --site-width: 720px;
+  --viewport-padding: 32px;
+
+  @media (width > 1100px) {
+    --site-width: 960px;
+  }
+
+  /* ---- Radius ---- */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+
+  /* ---- Motion ---- */
+  --ease-out:         cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out:      ease-in-out;
+  --ease-spring:      cubic-bezier(0.34, 1.56, 0.64, 1);
+  --duration-fast:    150ms;
+  --duration-normal:  250ms;
+  --duration-slow:    300ms;
+}
+
+/* ============================================================
+   I. BASE TOKENS — Warm Palette (default)
+   Flat values. No light-dark() here.
+   ============================================================ */
+:root,
+[data-color-palette="warm"] {
+  /* --- Neutrals: newsprint & ink --- */
+  --color-white:        #FFFFFF;
+  --color-newsprint:    #F5F2E8;
+  --color-parchment:    #EBE4D6;
+  --color-silver:       #C8C2B4;
+  --color-slate:        #6B6560;
+  --color-charcoal:     #3A3632;
+  --color-ink:          #1A1714;
+  --color-black:        #0D0B09;
+
+  /* --- Accent: editorial spot colors --- */
+  --color-masthead:       #8B2500;
+  --color-masthead-bright:#B83300;
+  --color-masthead-dim:   #6B1D00;
+  --color-rule:           #B8A88A;
+  --color-highlight:      #E8D5A3;
+  --color-link:           #2A4D6E;
+  --color-link-dim:       #1E3A54;
+
+  /* --- Utility: status colors --- */
+  --color-green:        #059669;
+  --color-green-light:  #34d399;
+  --color-yellow:       #B8960A;
+  --color-yellow-light: #E8D5A3;
+  --color-red:          #9B2C2C;
+  --color-red-light:    #f87171;
+}
+
+/* ============================================================
+   II. PALETTE OVERRIDE — Cool
+   Swaps base tokens to cool values.
+   Semantic layer doesn't change — it just picks these up.
+   ============================================================ */
+[data-color-palette="cool"] {
+  /* --- Neutrals --- */
+  --color-newsprint:    #F0F1F5;
+  --color-parchment:    #E3E5EC;
+  --color-silver:       #B4B8C8;
+  --color-slate:        #5C6178;
+  --color-charcoal:     #2E3040;
+  --color-ink:          #151720;
+  --color-black:        #0B0C12;
+ 
+  /* --- Accent --- */
+  --color-masthead:       #818cf8;
+  --color-masthead-bright:#a5b4fc;
+  --color-masthead-dim:   #4f46e5;
+  --color-rule:           #3a3d52;
+  --color-highlight:      #a5b4fc;
+  --color-link:           #4f46e5;
+  --color-link-dim:       #3730a3;
+ 
+  /* --- Utility --- */
+  --color-green:        #059669;
+  --color-green-light:  #34d399;
+  --color-yellow:       #d97706;
+  --color-yellow-light: #fbbf24;
+  --color-red:          #dc2626;
+  --color-red-light:    #f87171;
+}
+
+/* ============================================================
+   III. SEMANTIC TOKENS — Written once, never repeated
+   These reference base tokens via light-dark().
+   They work identically across warm and cool palettes.
+   ============================================================ */
+:root,
+[data-color-palette] {
+  /* Surfaces */
+  --surface-primary:     light-dark(var(--color-newsprint), var(--color-ink));
+  --surface-secondary:   light-dark(var(--color-parchment), var(--color-charcoal));
+  --surface-elevated:    light-dark(var(--color-white), var(--color-charcoal));
+  --surface-inset:       light-dark(var(--color-parchment), var(--color-black));
+
+  /* Text */
+  --text-primary:        light-dark(var(--color-ink), var(--color-newsprint));
+  --text-secondary:      light-dark(var(--color-slate), var(--color-silver));
+  --text-muted:          light-dark(var(--color-silver), var(--color-slate));
+
+  /* Interactive */
+  --interactive-link:    light-dark(var(--color-link), var(--color-highlight));
+  --interactive-hover:   light-dark(var(--color-link-dim), var(--color-newsprint));
+  --interactive-accent:  light-dark(var(--color-masthead), var(--color-masthead));
+
+  /* Accents */
+  --accent:              light-dark(var(--color-masthead), var(--color-masthead));
+  --accent-bright:       light-dark(var(--color-masthead-bright), var(--color-masthead-bright));
+  --accent-dim:          light-dark(var(--color-masthead-dim), var(--color-masthead-dim));
+  --accent-glow:         light-dark(oklch(from var(--color-masthead) l c h / 0.06), oklch(from var(--color-masthead) l c h / 0.12));
+ 
+  /* Borders & Rules */
+  --border-default:      light-dark(var(--color-rule), var(--color-charcoal));
+  --border-strong:       light-dark(var(--color-slate), var(--color-silver));
+  --border-decorative:   light-dark(var(--color-ink), var(--color-newsprint));
+ 
+  /* Code */
+  --surface-code:        light-dark(var(--color-parchment), var(--color-black));
+  --text-code:           light-dark(var(--color-charcoal), var(--color-parchment));
+ 
+  /* Feedback */
+  --highlight:           light-dark(var(--color-highlight), oklch(from var(--color-highlight) l c h / 0.15));
+  --accent-emphasis:     light-dark(var(--color-masthead), var(--color-masthead));
+  --status-info:         light-dark(var(--color-green), var(--color-green-light));
+  --status-warning:      light-dark(var(--color-yellow), var(--color-yellow-light));
+  --status-danger:       light-dark(var(--color-red), var(--color-red-light));
+
+  /* Shadows — OKLCH relative color syntax */
+  --shadow-color:        light-dark(
+                           oklch(from var(--color-ink) calc(l * 0.5) calc(c * 0.3) h / 0.08),
+                           oklch(from var(--color-black) calc(l * 0.2) calc(c * 0.1) h / 0.35)
+                         );
+  --shadow-sm:           0 1px 2px var(--shadow-color);
+  --shadow-md:           0 2px 8px var(--shadow-color),
+                         0 1px 3px light-dark(
+                           oklch(from var(--color-ink) calc(l * 0.4) calc(c * 0.2) h / 0.05),
+                           oklch(from var(--color-black) calc(l * 0.1) 0 h / 0.25)
+                         );
+  --shadow-lg:           0 4px 16px var(--shadow-color),
+                         0 2px 6px light-dark(
+                           oklch(from var(--color-ink) calc(l * 0.4) calc(c * 0.2) h / 0.06),
+                           oklch(from var(--color-black) calc(l * 0.1) 0 h / 0.3)
+                         );
+  --shadow-inset:        inset 0 2px 4px light-dark(
+                           oklch(from var(--color-ink) calc(l * 0.5) calc(c * 0.3) h / 0.06),
+                           oklch(from var(--color-black) calc(l * 0.1) 0 h / 0.3)
+                         );
+
+  /* ---- Palette ---- */
+  --c-bg:               #0a0a0f;
+  --c-bg-raised:        #111119;
+  --c-bg-interactive:   #16161f;
+  --c-surface:          #1c1c28;
+  --c-border:           #2a2a3a;
+  --c-border-subtle:    #1e1e2e;
+
+  --c-text:             #e2e8f0;
+  --c-text-secondary:   #94a3b8;
+  --c-text-muted:       #64748b;
+
+  --c-accent:           #818cf8;
+  --c-accent-bright:    #a5b4fc;
+  --c-accent-dim:       #4f46e5;
+  --c-accent-glow:      rgba(99, 102, 241, 0.12);
+
+  --c-green:            #34d399;
+  --c-yellow:           #fbbf24;
+  --c-red:              #f87171;
+}
+
+:root,
+[data-color-scheme="light"] {
+  color-scheme: light;
+}
+
+[data-color-scheme="dark"] {
+  color-scheme: dark;
+}
